@@ -101,6 +101,45 @@ class Board():
 
         return True
 
+    def calc_moves(self, piece):
+        """
+        Updates move field with all possible moves the piece can make
+
+        :return:
+        """
+
+        piece.moves = []
+        pos_index = int(to_index(piece.pos))
+        temp_moves = [pos_index + (9 * piece.direction), pos_index + (11 * piece.direction)]
+        if piece.queen:
+            temp_moves.append(pos_index - (11 * piece.direction))
+            temp_moves.append(pos_index - (9 * piece.direction))
+
+        # Formatting for moves to 0th row (top of the board)
+        for i in range(len(temp_moves)):
+            if len(str(temp_moves[i])) < 2:
+                temp_moves[i] = '0'+str(temp_moves[i])
+
+        # Filters moves not on board
+        moves = []
+        for move in temp_moves:
+            try:
+                m = to_coordinate(move)
+            except IndexError as err:
+                continue
+            moves.append(m)
+            del (m)
+
+        # Filters valid moves
+        for move in moves:
+            if self.can_move_to(move):
+                piece.moves.append(move)
+                continue
+            jump = piece.can_jump(move)
+            if jump is not None:
+                piece.moves.append(jump)
+        return piece.moves
+
     # <editor-fold desc="possible method">
     def jumps(self, space):
         """
@@ -196,12 +235,15 @@ class Board():
         return str_rep
 
 
-'''if __name__ == '__main__':
+if __name__ == '__main__':
     b = Board()
     print(b)
-    index = (to_index('d9'))
-    print(index)
-    print(b.evaluate())
+    p = b.get_piece("b8")
+    b.calc_moves(p)
+    print(p.moves)
+    #index = (to_index('d9'))
+    #print(index)
+    #print(b.evaluate())
     # print(b.to_coordinate(71))
     # print(b.to_coordinate('00'))
 
@@ -217,4 +259,3 @@ class Board():
             space+=(str(j))
             temp.append(space)
         print(temp)"""
-'''
