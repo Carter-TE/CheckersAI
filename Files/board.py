@@ -15,10 +15,10 @@ class Board():
                                 [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                                 [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                                 ['w', ' ', 'w', ' ', 'w', ' ', 'w', ' '],
-                                [' ', 'w', ' ', 'w', ' ', 'w', ' ', 'w'],
-                                ['w', ' ', 'w', ' ', 'w', ' ', 'w', ' ']]
+                                [' ', 'w', ' ', 'w', ' ', 'w', ' ', 'b'],
+                                ['w', ' ', 'w', ' ', 'w', ' ', ' ', ' ']]
                 
-                self.pcs = {}   
+                self.pcs = {str:Piece}   
 
                 # Creates dictionary mapping each piece to a space on the board (Key: space, Value: piece obj)
                 for row in range(len(self.board_arr)):
@@ -55,7 +55,7 @@ class Board():
 
         return tot
 
-    def move(self, start, to):
+    def move(self, start:str, to:str):
         """
         Moves piece from 'start' space to 'to' space
 
@@ -63,12 +63,13 @@ class Board():
         :param to: Location where the piece will move to
         :return: boolean: whether the piece was moved to the desired space or not
         """
-        self.pcs[start].calc_moves()
-        if to not in self.pcs[start].moves():
+        piece = self.pcs[start]
+        self.calc_moves(piece)
+        if to not in piece.moves:
             raise ValueError('Invalid move')
-        temp = self.pcs[start]
+        #temp = self.pcs[start]
         del (self.pcs[start])
-        self.pcs[to] = temp
+        self.pcs[to] = piece
         self.pcs[to].move(to)
         end_space = to
 
@@ -94,18 +95,18 @@ class Board():
             key = to_coordinate(j_space)
             del(self.pcs[key])
 
-        if r2 == 0 or r2 == 7:
-            self.pcs[end_space].make_queen()
+        if (r2 == 0 and piece.team.lower()=='w' or r2 == 7 and piece.team.lower()=='b') and not piece.queen:
+            self.pcs[end_space].queen = True
             self.board_arr[r2][c2] = self.board_arr[r2][c2].upper()
 
 
         return True
 
-    def calc_moves(self, piece):
+    def calc_moves(self, piece:Piece):
         """
         Updates move field with all possible moves the piece can make
 
-        :return:
+        :return: All possible moves of specified piece
         """
 
         piece.moves = []
@@ -238,9 +239,11 @@ class Board():
 if __name__ == '__main__':
     b = Board()
     print(b)
-    p = b.get_piece("b8")
+    p = b.get_piece("h2")
     b.calc_moves(p)
     print(p.moves)
+    b.move("h2","g1")
+    print(b)
     #index = (to_index('d9'))
     #print(index)
     #print(b.evaluate())
