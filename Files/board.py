@@ -15,8 +15,8 @@ class Board():
                                 [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                                 [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                                 ['w', ' ', 'w', ' ', 'w', ' ', 'w', ' '],
-                                [' ', 'w', ' ', 'w', ' ', 'w', ' ', 'b'],
-                                ['w', ' ', 'w', ' ', 'w', ' ', ' ', ' ']]
+                                [' ', 'w', ' ', 'w', ' ', 'w', ' ', 'w'],
+                                ['w', ' ', 'w', ' ', 'w', ' ', 'w', ' ']]
                 
                 self.pcs = {str:Piece}   
 
@@ -98,8 +98,6 @@ class Board():
         if (r2 == 0 and piece.team.lower()=='w' or r2 == 7 and piece.team.lower()=='b') and not piece.queen:
             self.pcs[end_space].queen = True
             self.board_arr[r2][c2] = self.board_arr[r2][c2].upper()
-
-
         return True
 
     def calc_moves(self, piece:Piece):
@@ -136,32 +134,45 @@ class Board():
             if self.can_move_to(move):
                 piece.moves.append(move)
                 continue
-            jump = piece.can_jump(move)
+            jump = self.can_jump(piece, move)
             if jump is not None:
                 piece.moves.append(jump)
         return piece.moves
 
-    # <editor-fold desc="possible method">
-    def jumps(self, space):
+    def can_jump(self, piece:Piece, move):
         """
-        Calculates whether any jumps are possible from piece located at space
-        
-        :param space: Space location of starting piece
-        :return: list: All space locations of possible jumps or []
-        """
-        nums = list(space)
-        row = int(nums[0])
-        col = int(nums[1])
-        adjacent = list()
-        adjacent.append(str(row + 1) + str(col - 1))
-        adjacent.append(str(row + 1) + str(col + 1))
-        if self.get_display_piece(space).isupper():
-            adjacent.append(str(row - 1) + str(col - 1))
-            adjacent.append(str(row - 1) + str(col + 1))
-        '''for i in adjacent
-            if'''
-    # </editor-fold>
+        Determines whether a space can be jumped over or not
 
+        :param move: Space to be jumped
+        :return: None or space that will be jumped too
+        """
+        jump_space = None
+        if self.get_display_piece(move) not in [piece.team, piece.team.upper(), ' ']:
+
+            try:
+                move = int(to_index(move))
+                space = int(to_index(piece.pos))
+            except IndexError as err:
+                print(err)
+                return None
+        else:
+            return None
+
+        if (move - space) == 11:
+            jump_space = str(move + 11)
+        elif (move - space) == 9:
+            jump_space = str(move + 9)
+        elif (move - space) == -11:
+            jump_space = str(move - 11)
+        elif (move - space) == -9:
+            jump_space = str(move - 9)
+        try:
+            jump_space = to_coordinate(jump_space)
+        except IndexError:
+            return None
+        if self.can_move_to(jump_space):
+            return jump_space
+        return None
 
     def can_move_to(self, space):
         """
@@ -170,7 +181,6 @@ class Board():
         :param space: The space location to be checked if piece can be moved to
         :return: boolean: whether the piece can be moved to space or not
         """
-
         try:
             move = to_index(space)
         except IndexError as err:
@@ -219,7 +229,6 @@ class Board():
         col = int(ispace[1])
         return self.board_arr[row][col]
 
-
     def __str__(self):
         str_rep = '    A B C D E F G H\n    ----------------\n'
         row_num = 8
@@ -237,28 +246,45 @@ class Board():
 
 
 if __name__ == '__main__':
-    b = Board()
+    
+    ## Two player main
+    """ b = Board()
+    for i in range(10):
+        print(b)
+        print("Black's Move.")
+        move = input("Enter move separated by space (Start End)").split(" ")
+        while(True):
+            try:
+                b.move(move[0],move[1])
+                break
+            except ValueError as err:
+                move = input("Enter Valid move (Start End)").split(" ")
+                print(b.calc_moves(b.get_piece(move[0])))
+            except KeyError as err:
+                print(err)
+                move = input("Enter Valid move (Start End)").split(" ")
+
+        print(b)
+        print("White's Move.")
+        move = input("Enter move separated by space (Start End)").split(" ")
+        while(True):
+            try:
+                b.move(move[0],move[1])
+                break
+            except(ValueError):
+                print(b.calc_moves(b.get_piece(move[0])))
+                move = input("Enter Valid move (Start End)").split(" ")
+                
+            except KeyError as err:
+                print("Invalid start space"+err)
+                move = input("Enter Valid move (Start End)").split(" ") """
+
+
+    """ b = Board()
     print(b)
-    p = b.get_piece("h2")
+    p = b.get_piece("b6")
     b.calc_moves(p)
     print(p.moves)
-    b.move("h2","g1")
-    print(b)
-    #index = (to_index('d9'))
-    #print(index)
-    #print(b.evaluate())
-    # print(b.to_coordinate(71))
-    # print(b.to_coordinate('00'))
-
-    """
-    print(b.move('11', '21'))
-    print(b)
-
-    for i in range(8):
-        temp=[]
-        for j in range(8):
-            space = str(i)
-            space+=(' ')
-            space+=(str(j))
-            temp.append(space)
-        print(temp)"""
+    b.move("b6","d4")
+    print(b) """
+    
