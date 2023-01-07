@@ -2,23 +2,31 @@ from checkers_piece import Piece
 from functions import to_index, to_coordinate
 import copy
 
+def tester1():
+    pass
+
 class Board():
 
-    def __init__(self, board=None, game=None):
+    def __init__(self, board=None, game=None, arr=None):
         if game == 'chess':
             pass
         else:
+            
+
             if board is None:
-                self.board_arr=[[' ', 'b', ' ', 'b', ' ', 'b', ' ', 'b'],
-                                ['b', ' ', 'b', ' ', 'b', ' ', 'b', ' '],
-                                [' ', 'b', ' ', 'b', ' ', 'b', ' ', 'b'],
-                                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                                [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                                ['w', ' ', 'w', ' ', 'w', ' ', 'w', ' '],
-                                [' ', 'w', ' ', 'w', ' ', 'w', ' ', 'w'],
-                                ['w', ' ', 'w', ' ', 'w', ' ', 'w', ' ']]
+                if arr is not None:
+                    self.board_arr = arr
+                else:    
+                    self.board_arr=[[' ', 'b', ' ', 'b', ' ', 'b', ' ', 'b'],
+                                    ['b', ' ', 'b', ' ', 'b', ' ', 'b', ' '],
+                                    [' ', 'b', ' ', 'b', ' ', 'b', ' ', 'b'],
+                                    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                                    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                                    ['w', ' ', 'w', ' ', 'w', ' ', 'w', ' '],
+                                    [' ', 'w', ' ', 'w', ' ', 'w', ' ', 'w'],
+                                    ['w', ' ', 'w', ' ', 'w', ' ', 'w', ' ']]
                 
-                self.pcs = {str:Piece}   
+                self.pcs = {}   
 
                 # Creates dictionary mapping each piece to a space on the board (Key: space, Value: piece obj)
                 for row in range(len(self.board_arr)):
@@ -48,7 +56,7 @@ class Board():
             else:
                 temp+=1
             #Add or Subtract depending on team 
-            if piece.team == 'w':
+            if piece.team == 'b':
                 tot+=temp
             else:
                 tot-=temp
@@ -201,7 +209,7 @@ class Board():
         :param team: String 'b' or 'w' to determine which teams pieces to return
         :return: list: Strings of (row,col) space coordinates of each piece
         """
-        return [piece for piece in self.pcs.values() if piece.team == team ]
+        return [piece for piece in list(self.pcs.values()) if piece.team == team ]
 
     def get_piece(self, space):
         """
@@ -245,10 +253,13 @@ class Board():
         return str_rep
 
 
-if __name__ == '__main__':
-    
+"""if __name__ == '__main__':
+    b = Board()
+    p = b.get_piece('b6')
+    print(b.calc_moves(p))
+
     ## Two player main
-    """ b = Board()
+     b = Board()
     for i in range(10):
         print(b)
         print("Black's Move.")
@@ -280,11 +291,5 @@ if __name__ == '__main__':
                 move = input("Enter Valid move (Start End)").split(" ") """
 
 
-    """ b = Board()
-    print(b)
-    p = b.get_piece("b6")
-    b.calc_moves(p)
-    print(p.moves)
-    b.move("b6","d4")
-    print(b) """
+
     
