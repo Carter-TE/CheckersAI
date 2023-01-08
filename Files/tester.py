@@ -19,7 +19,7 @@ if __name__=='__main__':
     ai_w = Ai(b,False) """
 
     
-    b_turn = True
+    b_turn = False
     print(b)
     while len(b.get_pieces('b')) != 0 and len(b.get_pieces('w')) != 0:
 
