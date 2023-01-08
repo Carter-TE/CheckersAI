@@ -26,8 +26,37 @@ class Ai:
                 moves[piece] = p_moves
         return moves
 
-    def select_move(self):
-        pass
+    def select_move(self, board, team, depth):
+        """
+        Selects the piece with the move that evaluates to the highest board evaluation
+        Calls minimax for moves on each piece"""
+
+        
+        
+        moves_per_piece = self.compute_moves(board, team)
+
+        if team == 'b':
+            maximizing = True
+            evaluation = float('-inf')
+        else:
+            maximizing = False
+            evaluation = float('inf')
+
+        for piece in moves_per_piece.keys():
+           evaluation = self.minimax(maximizing, depth, board, piece)
+        
+        piece_to_move = Piece(None,None,team)
+        piece_to_move.best_move = {' ':evaluation}
+        for piece in moves_per_piece.keys():
+            if maximizing:
+                if list(piece.best_move.values())[0] > list(piece_to_move.best_move.values())[0]:
+                    piece_to_move = piece
+
+            else: 
+                if list(piece.best_move.values())[0] < list(piece_to_move.best_move.values())[0]:
+                    piece_to_move = piece
+        
+        return piece_to_move
 
     def evaluate(self, board:Board):
         tot = board.evaluate()
@@ -43,9 +72,42 @@ class Ai:
         return tot
                 
 
+    def minimax(self, maximizing, depth, temp_board:Board, piece:Piece):
+        """
+        Returns the best move for a specific piece"""
+
+        if depth == 0 or len(temp_board.get_pieces('b')) == 0 or len(temp_board.get_pieces('w')) == 0:
+            return self.evaluate(temp_board)
+
+        if maximizing:
+            for move in piece.moves:
+                temp = Board(temp_board)
+                temp.move(piece.pos, move)
+                current_eval = self.select_move(temp, 'w', depth-1)
+                max_eval = max(list(piece.best_move.values())[0], list(current_eval.best_move.values())[0])
+
+                if max_eval == list(current_eval.best_move.values())[0]:
+                    piece.best_move = {move:max_eval}
+            return float('-inf')
+
+        
+        else: 
+            for move in piece.moves:
+                temp = Board(temp_board)
+                temp.move(piece.pos, move)
+                current_eval = self.select_move(temp, 'b', depth-1)
+                min_eval = min(list(piece.best_move.values())[0], list(current_eval.best_move.values())[0])
+
+                if min_eval == list(current_eval.best_move.values())[0]:
+                    piece.best_move = {move:min_eval}
+            
+            return float('inf')
+                
+                
+        
         
 
-    def minimax(self, maximizing, depth, temp_board:Board):
+    """ def minimax(self, maximizing, depth, temp_board:Board):
 
         if depth == 0 or len(temp_board.get_pieces('b')) == 0 or len(temp_board.get_pieces('w')) == 0:
             return self.evaluate(temp_board)
@@ -72,4 +134,4 @@ class Ai:
                     c_eval = self.minimax(True, depth-1, temp)
                     min_eval = min(min_eval, c_eval)
             
-            return min_eval
+            return min_eval """

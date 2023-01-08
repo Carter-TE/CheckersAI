@@ -8,10 +8,13 @@ class Piece:
         #self.board = board
         self.team = team
         self.moves = []
+        self.best_move = {' ':float('-inf')}
         self.queen = queen
         self.direction = 1
         if team == 'w':
-            self.direction = -1  
+            self.direction = -1
+            self.best_move = {' ':float('inf')}
+ 
 
     def move(self, space):
         self.pos = space
